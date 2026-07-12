@@ -1,0 +1,23 @@
+[
+    {
+        "id": "phone_retro_1",
+        "name": "Nokia Tijolo",
+        "category": "retro",
+        "difficulty": 1,
+        "sprite": "placeholder"
+    },
+    {
+        "id": "phone_modern_1",
+        "name": "iFruit 12",
+        "category": "moderno",
+        "difficulty": 3,
+        "sprite": "placeholder"
+    },
+    {
+        "id": "phone_geek_1",
+        "name": "PipBoy Communicator",
+        "category": "geek",
+        "difficulty": 5,
+        "sprite": "placeholder"
+    }
+]

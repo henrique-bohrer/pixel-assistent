@@ -1,0 +1,30 @@
+[
+    {
+        "id": "defect_screen",
+        "name": "Tela Quebrada",
+        "symptom": "Meu celular caiu e a tela tá em pedaços...",
+        "required_part": "part_screen",
+        "minigame": "screen_replacement"
+    },
+    {
+        "id": "defect_battery",
+        "name": "Bateria Viciada",
+        "symptom": "Não segura carga nem por 10 minutos!",
+        "required_part": "part_battery",
+        "minigame": "battery_replacement"
+    },
+    {
+        "id": "defect_oxidation",
+        "name": "Oxidação",
+        "symptom": "Deixei cair na privada...",
+        "required_part": "part_alcohol",
+        "minigame": "cleaning"
+    },
+    {
+        "id": "defect_chip",
+        "name": "Chip Queimado",
+        "symptom": "Fez um estalo e não liga mais, tem cheiro de queimado.",
+        "required_part": "part_chip",
+        "minigame": "soldering"
+    }
+]

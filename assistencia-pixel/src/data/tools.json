@@ -1,0 +1,26 @@
+[
+    {
+        "id": "tool_screwdriver",
+        "name": "Chave Phillips",
+        "speed": 1.0,
+        "unlock_level": 1
+    },
+    {
+        "id": "tool_multimeter",
+        "name": "Multímetro",
+        "speed": 1.0,
+        "unlock_level": 1
+    },
+    {
+        "id": "tool_soldering_iron",
+        "name": "Ferro de Solda",
+        "speed": 1.0,
+        "unlock_level": 2
+    },
+    {
+        "id": "tool_brush",
+        "name": "Pincel Anti-estático",
+        "speed": 1.0,
+        "unlock_level": 1
+    }
+]

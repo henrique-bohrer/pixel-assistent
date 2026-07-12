@@ -1,0 +1,30 @@
+[
+    {
+        "id": "part_screen",
+        "name": "Tela de Reposição",
+        "rarity": "comum",
+        "cost": 50,
+        "category": "todas"
+    },
+    {
+        "id": "part_battery",
+        "name": "Bateria Nova",
+        "rarity": "comum",
+        "cost": 30,
+        "category": "todas"
+    },
+    {
+        "id": "part_alcohol",
+        "name": "Álcool Isopropílico",
+        "rarity": "comum",
+        "cost": 10,
+        "category": "todas"
+    },
+    {
+        "id": "part_chip",
+        "name": "Microchip Padrão",
+        "rarity": "rara",
+        "cost": 100,
+        "category": "moderno"
+    }
+]
