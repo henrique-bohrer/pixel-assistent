@@ -1,23 +1,26 @@
 [
     {
-        "id": "phone_retro_1",
-        "name": "Nokia Tijolo",
+        "id": "retro_brick",
+        "name": "Tijolão 2000",
         "category": "retro",
-        "difficulty": 1,
-        "sprite": "placeholder"
+        "sprite": "phone_retro",
+        "baseDifficulty": 1,
+        "screwCount": 4
     },
     {
-        "id": "phone_modern_1",
-        "name": "iFruit 12",
-        "category": "moderno",
-        "difficulty": 3,
-        "sprite": "placeholder"
+        "id": "modern_slim",
+        "name": "I-PhoneZ",
+        "category": "modern",
+        "sprite": "phone_modern",
+        "baseDifficulty": 2,
+        "screwCount": 6
     },
     {
-        "id": "phone_geek_1",
-        "name": "PipBoy Communicator",
+        "id": "geek_cyber",
+        "name": "CyberDeck Alpha",
         "category": "geek",
-        "difficulty": 5,
-        "sprite": "placeholder"
+        "sprite": "phone_geek",
+        "baseDifficulty": 4,
+        "screwCount": 8
     }
 ]

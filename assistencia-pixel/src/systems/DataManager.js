@@ -1,81 +1,50 @@
-import Phaser from 'phaser';
-import modelsData from '../data/models.json';
-import defectsData from '../data/defects.json';
-import partsData from '../data/parts.json';
-import toolsData from '../data/tools.json';
-
-class DataManager {
-    constructor() {
-        this.models = modelsData;
-        this.defects = defectsData;
-        this.parts = partsData;
-        this.tools = toolsData;
-
-        // Player state
-        this.playerState = {
-            reputation: 50,
-            coins: 100,
-            inventory: {
-                "part_screen": 5,
-                "part_battery": 5,
-                "part_alcohol": 10,
-                "part_chip": 2
-            },
-            level: 1 // 1: Iniciante, 2: Intermediário, 3: Referência, 4: Lendária
-        };
-
-        this.loadProgress();
+export class DataManager {
+    constructor(scene) {
+        this.scene = scene;
+        this.models = [];
+        this.defects = [];
+        this.parts = [];
+        this.tools = [];
     }
 
-    loadProgress() {
-        const savedState = localStorage.getItem('assistenciaPixel_save');
-        if (savedState) {
-            try {
-                this.playerState = JSON.parse(savedState);
-            } catch (e) {
-                console.error("Failed to load save state", e);
-            }
-        }
+    loadData() {
+        this.models = this.scene.cache.json.get('models');
+        this.defects = this.scene.cache.json.get('defects');
+        this.parts = this.scene.cache.json.get('parts');
+        this.tools = this.scene.cache.json.get('tools');
     }
 
-    saveProgress() {
-        localStorage.setItem('assistenciaPixel_save', JSON.stringify(this.playerState));
-    }
+    getRandomClient(reputationLevel) {
+        // Filter models based on reputation
+        let availableModels = this.models.filter(m => {
+            if (m.category === 'geek' && reputationLevel < 3) return false;
+            return true;
+        });
 
-    addReputation(amount) {
-        this.playerState.reputation = Phaser.Math.Clamp(this.playerState.reputation + amount, 0, 100);
-        this.updateLevel();
-        this.saveProgress();
-    }
+        // Pick a random model
+        const model = availableModels[Math.floor(Math.random() * availableModels.length)];
 
-    addCoins(amount) {
-        this.playerState.coins += amount;
-        this.saveProgress();
-    }
+        // Get defects compatible with this model
+        const availableDefects = this.defects.filter(d => d.categories.includes(model.category));
 
-    updateLevel() {
-        if (this.playerState.reputation >= 90) this.playerState.level = 4;
-        else if (this.playerState.reputation >= 70) this.playerState.level = 3;
-        else if (this.playerState.reputation >= 40) this.playerState.level = 2;
-        else this.playerState.level = 1;
-    }
-
-    // Procedural generation
-    getRandomClient() {
-        // Filter models by difficulty/reputation level
-        const availableModels = this.models.filter(m => m.difficulty <= this.playerState.level * 2);
-        const model = availableModels[Math.floor(Math.random() * availableModels.length)] || this.models[0];
-
-        const defect = this.defects[Math.floor(Math.random() * this.defects.length)];
+        // Pick a random defect
+        const defect = availableDefects[Math.floor(Math.random() * availableDefects.length)];
 
         return {
-            id: 'client_' + Date.now(),
+            clientName: "Cliente " + Math.floor(Math.random() * 1000),
             model: model,
             defect: defect,
-            status: 'todo' // todo, in_progress, done
+            reward: defect.minigame === 'soldering' ? 100 : 50
         };
     }
-}
 
-// Export a singleton instance
-export const dataManager = new DataManager();
+    getDefectsForModel(modelId) {
+        const model = this.models.find(m => m.id === modelId);
+        if (!model) return [];
+        return this.defects.filter(d => d.categories.includes(model.category));
+    }
+
+    getPart(partId) {
+        return this.parts.find(p => p.id === partId);
+    }
+}

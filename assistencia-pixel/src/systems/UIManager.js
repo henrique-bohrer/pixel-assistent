@@ -1,76 +1,99 @@
-import Phaser from 'phaser';
-import { dataManager } from './DataManager';
-
 export class UIManager {
-    constructor(scene) {
+    constructor(scene, progressionManager) {
         this.scene = scene;
-        this.hudGraphics = null;
-        this.reputationText = null;
-        this.coinsText = null;
+        this.progressionManager = progressionManager;
+        this.hudGroup = this.scene.add.group();
+        this.toasts = [];
+        this.createHUD();
     }
 
     createHUD() {
-        // Simple dark bar at the top
-        this.hudGraphics = this.scene.add.graphics();
-        this.hudGraphics.fillStyle(0x222222, 1);
-        this.hudGraphics.fillRect(0, 0, this.scene.scale.width, 24);
-        this.hudGraphics.setDepth(100); // Make sure it's on top
+        // Simple background bar for HUD
+        const bg = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width, 24, 0x222222).setOrigin(0, 0);
+        this.hudGroup.add(bg);
 
-        // Text
-        this.reputationText = this.scene.add.text(10, 5, `Rep: ${dataManager.playerState.reputation}/100`, { fontSize: '12px', fill: '#fff', fontFamily: 'monospace' }).setDepth(101);
-        this.coinsText = this.scene.add.text(120, 5, `Moedas: ${dataManager.playerState.coins}`, { fontSize: '12px', fill: '#ffd700', fontFamily: 'monospace' }).setDepth(101);
+        // Reputation text
+        this.repText = this.scene.add.text(10, 4, `Rep: ${this.progressionManager.reputation}/100`, {
+            fontSize: '10px',
+            fill: '#fff',
+            fontFamily: 'monospace'
+        });
+        this.hudGroup.add(this.repText);
 
-        const levelNames = ["Iniciante", "Intermediário", "Referência", "Lendária"];
-        this.levelText = this.scene.add.text(250, 5, `Nvl: ${levelNames[dataManager.playerState.level - 1]}`, { fontSize: '12px', fill: '#aaa', fontFamily: 'monospace' }).setDepth(101);
+        // Coins text
+        this.coinsText = this.scene.add.text(100, 4, `Moedas: ${this.progressionManager.coins}`, {
+            fontSize: '10px',
+            fill: '#fff',
+            fontFamily: 'monospace'
+        });
+        this.hudGroup.add(this.coinsText);
+
+        // Level text
+        const levels = ["Iniciante", "Intermediário", "Referência", "Lendária"];
+        this.levelText = this.scene.add.text(190, 4, `Nível: ${levels[this.progressionManager.level]}`, {
+            fontSize: '10px',
+            fill: '#fff',
+            fontFamily: 'monospace'
+        });
+        this.hudGroup.add(this.levelText);
+
+        // Fix to camera so it doesn't move if we add scrolling later
+        this.hudGroup.setDepth(100);
     }
 
     updateHUD() {
-        if(this.reputationText) {
-            this.reputationText.setText(`Rep: ${dataManager.playerState.reputation}/100`);
-            this.coinsText.setText(`Moedas: ${dataManager.playerState.coins}`);
-
-            const levelNames = ["Iniciante", "Intermediário", "Referência", "Lendária"];
-            this.levelText.setText(`Nvl: ${levelNames[dataManager.playerState.level - 1]}`);
-        }
+        this.repText.setText(`Rep: ${this.progressionManager.reputation}/100`);
+        this.coinsText.setText(`Moedas: ${this.progressionManager.coins}`);
+        const levels = ["Iniciante", "Intermediário", "Referência", "Lendária"];
+        this.levelText.setText(`Nível: ${levels[this.progressionManager.level]}`);
     }
 
-    showToast(message, color = 0x4CAF50) {
-        const toastW = 150;
-        const toastH = 30;
-        const x = this.scene.scale.width / 2 - toastW / 2;
-        const y = this.scene.scale.height - toastH - 10;
+    showToast(message) {
+        // Create a simple toast notification
+        const toastWidth = 150;
+        const toastHeight = 30;
+        const startY = -toastHeight;
+        const targetY = 30;
 
-        const container = this.scene.add.container(x, y).setDepth(200);
+        const container = this.scene.add.container(this.scene.cameras.main.width / 2, startY);
+        container.setDepth(101);
 
-        const bg = this.scene.add.graphics();
-        bg.fillStyle(color, 0.9);
-        bg.fillRoundedRect(0, 0, toastW, toastH, 4);
+        const bg = this.scene.add.rectangle(0, 0, toastWidth, toastHeight, 0x000000, 0.8);
+        bg.setStrokeStyle(1, 0xffffff);
 
-        const text = this.scene.add.text(toastW/2, toastH/2, message, {
+        const text = this.scene.add.text(0, 0, message, {
             fontSize: '10px',
+            fill: '#fff',
             fontFamily: 'monospace',
-            fill: '#fff'
+            align: 'center',
+            wordWrap: { width: toastWidth - 10 }
         }).setOrigin(0.5);
 
         container.add([bg, text]);
-        container.setAlpha(0);
 
+        // Slide in
         this.scene.tweens.add({
             targets: container,
-            alpha: 1,
-            duration: 200,
+            y: targetY,
+            duration: 300,
+            ease: 'Power2',
             yoyo: true,
-            hold: 2000,
+            hold: 2000, // hold for 2 seconds
             onComplete: () => {
                 container.destroy();
             }
         });
     }
 
-    fadeTransition(targetSceneKey, data) {
-        this.scene.cameras.main.fadeOut(200, 0, 0, 0);
-        this.scene.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-            this.scene.scene.start(targetSceneKey, data);
+    fadeIn(duration = 300, callback = null) {
+        this.scene.cameras.main.fadeIn(duration, 0, 0, 0, (camera, progress) => {
+            if (progress === 1 && callback) callback();
+        });
+    }
+
+    fadeOut(duration = 300, callback = null) {
+        this.scene.cameras.main.fadeOut(duration, 0, 0, 0, (camera, progress) => {
+            if (progress === 1 && callback) callback();
         });
     }
 }

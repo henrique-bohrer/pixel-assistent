@@ -6,116 +6,130 @@ export class DiagnosisScene extends Phaser.Scene {
         super({ key: 'DiagnosisScene' });
     }
 
-    init(data) {
-        this.client = data.client;
-    }
-
     create() {
-        this.cameras.main.fadeIn(200, 0, 0, 0);
-        this.cameras.main.setBackgroundColor('#2c3e50');
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
 
-        this.ui = new UIManager(this);
-        this.ui.createHUD();
+        this.clientData = this.registry.get('currentClient');
+        this.progressionManager = this.registry.get('progressionManager');
 
-        const width = this.scale.width;
-        const height = this.scale.height;
+        this.uiManager = new UIManager(this, this.progressionManager);
 
-        // Title
-        this.add.text(width / 2, 40, 'Mesa de Diagnóstico', {
-            fontFamily: 'monospace', fontSize: '14px', fill: '#fff'
-        }).setOrigin(0.5);
+        // Background
+        this.add.rectangle(0, 0, width, height, 0x223322).setOrigin(0, 0);
+        this.add.text(width / 2, 40, 'Diagnóstico', { fontFamily: 'monospace', fontSize: '16px', fill: '#fff' }).setOrigin(0.5);
 
-        // Phone placeholder
-        const phone = this.add.graphics();
-        phone.fillStyle(0x555555, 1);
-        phone.fillRoundedRect(width / 2 - 40, height / 2 - 60, 80, 120, 8);
-        phone.lineStyle(2, 0x333333);
-        phone.strokeRoundedRect(width / 2 - 40, height / 2 - 60, 80, 120, 8);
+        // Phone Sprite
+        this.phoneSprite = this.add.image(width / 2, height / 2 + 20, this.clientData.model.sprite).setScale(1.2);
 
-        this.add.text(width / 2, height / 2 - 40, this.client.model.name, {
-            fontFamily: 'monospace', fontSize: '10px', fill: '#ccc'
-        }).setOrigin(0.5);
+        // Client Symptom Balloon
+        this.createSymptomBalloon();
 
-        // Client dialog bubble
-        const bubble = this.add.graphics();
-        bubble.fillStyle(0xffffff, 1);
-        bubble.fillRoundedRect(20, 60, 120, 80, 8);
+        // State machine for minigames
+        this.state = 'opening'; // opening -> diagnosis -> ready
+        this.screwsLeft = this.clientData.model.screwCount || 4;
 
-        this.add.text(25, 65, `Cliente diz:\n\n"${this.client.defect.symptom}"`, {
-            fontFamily: 'monospace', fontSize: '10px', fill: '#000', wordWrap: { width: 110 }
-        });
+        this.startOpeningMinigame();
 
-        // Diagnose Action Buttons
-        this.createDiagnosticSteps(width, height);
-
-        // Back button
-        const backBtn = this.add.text(10, height - 20, '< Voltar Oficina', {
-            fontFamily: 'monospace', fontSize: '12px', fill: '#e74c3c'
-        }).setInteractive({ cursor: 'pointer' });
-
-        backBtn.on('pointerdown', () => {
-            this.ui.fadeTransition('WorkshopScene');
-        });
+        this.uiManager.fadeIn(200);
     }
 
-    createDiagnosticSteps(width, height) {
-        this.stepsCompleted = 0;
+    createSymptomBalloon() {
+        const balloonBg = this.add.rectangle(this.cameras.main.width / 2, 70, 200, 40, 0xffffff).setOrigin(0.5);
+        balloonBg.setStrokeStyle(1, 0x000000);
 
-        const step1Btn = this.add.graphics();
-        step1Btn.fillStyle(0x3498db, 1);
-        step1Btn.fillRect(width - 120, 80, 100, 30);
-
-        const step1Text = this.add.text(width - 70, 95, 'Abrir Parafusos', {
-            fontFamily: 'monospace', fontSize: '10px', fill: '#fff'
+        this.add.text(this.cameras.main.width / 2, 70, this.clientData.defect.symptom, {
+            fontFamily: 'monospace',
+            fontSize: '9px',
+            fill: '#000',
+            align: 'center',
+            wordWrap: { width: 190 }
         }).setOrigin(0.5);
-
-        const step1Zone = this.add.zone(width - 70, 95, 100, 30).setInteractive({ cursor: 'pointer' });
-
-        step1Zone.on('pointerdown', () => {
-            step1Btn.fillStyle(0x2ecc71, 1);
-            step1Btn.fillRect(width - 120, 80, 100, 30);
-            step1Text.setText('Aberto!');
-            step1Zone.disableInteractive();
-            this.ui.showToast("Aparelho aberto.", 0x3498db);
-            this.checkProgress(width, height);
-        });
-
-        const step2Btn = this.add.graphics();
-        step2Btn.fillStyle(0x9b59b6, 1);
-        step2Btn.fillRect(width - 120, 120, 100, 30);
-
-        const step2Text = this.add.text(width - 70, 135, 'Usar Multímetro', {
-            fontFamily: 'monospace', fontSize: '10px', fill: '#fff'
-        }).setOrigin(0.5);
-
-        const step2Zone = this.add.zone(width - 70, 135, 100, 30).setInteractive({ cursor: 'pointer' });
-
-        step2Zone.on('pointerdown', () => {
-            step2Btn.fillStyle(0x2ecc71, 1);
-            step2Btn.fillRect(width - 120, 120, 100, 30);
-            step2Text.setText('Defeito achado');
-            step2Zone.disableInteractive();
-            this.ui.showToast(`Diagnóstico: ${this.client.defect.name}`, 0x9b59b6);
-            this.checkProgress(width, height);
-        });
     }
 
-    checkProgress(width, height) {
-        this.stepsCompleted++;
-        if (this.stepsCompleted === 2) {
-            // Show Finish Diagnosis Button
-            const finBtn = this.add.graphics();
-            finBtn.fillStyle(0xe67e22, 1);
-            finBtn.fillRect(width / 2 - 60, height - 40, 120, 30);
+    startOpeningMinigame() {
+        this.screws = this.add.group();
+        const positions = [
+            { x: -20, y: -40 }, { x: 20, y: -40 },
+            { x: -20, y: 40 }, { x: 20, y: 40 },
+            { x: 0, y: -40 }, { x: 0, y: 40 },
+            { x: -20, y: 0 }, { x: 20, y: 0 }
+        ];
 
-            this.add.text(width / 2, height - 25, 'Confirmar Defeito', {
-                fontFamily: 'monospace', fontSize: '10px', fill: '#fff', fontStyle: 'bold'
-            }).setOrigin(0.5);
+        for (let i = 0; i < this.screwsLeft; i++) {
+            const pos = positions[i % positions.length];
+            const screw = this.add.image(this.cameras.main.width / 2 + pos.x, this.cameras.main.height / 2 + 20 + pos.y, 'screw').setInteractive({ useHandCursor: true });
 
-            const finZone = this.add.zone(width / 2, height - 25, 120, 30).setInteractive({ cursor: 'pointer' });
-            finZone.on('pointerdown', () => {
-                this.ui.fadeTransition('WorkshopScene');
+            screw.clicksNeeded = 3;
+            screw.on('pointerdown', () => {
+                screw.clicksNeeded--;
+                // Visual feedback (rotate or scale)
+                this.tweens.add({ targets: screw, angle: '+=90', duration: 100 });
+
+                if (screw.clicksNeeded <= 0) {
+                    screw.destroy();
+                    this.screwsLeft--;
+                    this.uiManager.showToast('Parafuso removido');
+                    if (this.screwsLeft <= 0) {
+                        this.startMultimeterMinigame();
+                    }
+                }
             });
+            this.screws.add(screw);
         }
+    }
+
+    startMultimeterMinigame() {
+        this.state = 'diagnosis';
+        this.uiManager.showToast('Telefone aberto. Use o multímetro!');
+
+        // Change phone to open state (just tint for now or show internal texture)
+        this.phoneSprite.setTint(0xaaaaaa);
+
+        // Multimeter probes
+        this.probe1 = this.add.rectangle(this.cameras.main.width / 2 - 50, this.cameras.main.height - 20, 5, 40, 0xff0000).setInteractive({ draggable: true });
+        this.probe2 = this.add.rectangle(this.cameras.main.width / 2 + 50, this.cameras.main.height - 20, 5, 40, 0x000000).setInteractive({ draggable: true });
+
+        // Test points
+        this.targetPoint1 = this.add.rectangle(this.cameras.main.width / 2 - 10, this.cameras.main.height / 2, 10, 10, 0xdddd00).setAlpha(0.5);
+        this.targetPoint2 = this.add.rectangle(this.cameras.main.width / 2 + 10, this.cameras.main.height / 2 + 20, 10, 10, 0xdddd00).setAlpha(0.5);
+
+        this.input.setDraggable(this.probe1);
+        this.input.setDraggable(this.probe2);
+
+        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+            this.checkMultimeter();
+        });
+    }
+
+    checkMultimeter() {
+        const dist1 = Phaser.Math.Distance.Between(this.probe1.x, this.probe1.y, this.targetPoint1.x, this.targetPoint1.y);
+        const dist2 = Phaser.Math.Distance.Between(this.probe2.x, this.probe2.y, this.targetPoint2.x, this.targetPoint2.y);
+
+        // Also check swapped
+        const dist3 = Phaser.Math.Distance.Between(this.probe1.x, this.probe1.y, this.targetPoint2.x, this.targetPoint2.y);
+        const dist4 = Phaser.Math.Distance.Between(this.probe2.x, this.probe2.y, this.targetPoint1.x, this.targetPoint1.y);
+
+        if ((dist1 < 15 && dist2 < 15) || (dist3 < 15 && dist4 < 15)) {
+            if (this.state !== 'ready') {
+                this.state = 'ready';
+                this.uiManager.showToast(`Defeito encontrado: ${this.clientData.defect.name}`);
+                this.showRepairButton();
+            }
+        }
+    }
+
+    showRepairButton() {
+        const btnBg = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height - 30, 100, 30, 0x00aa00).setInteractive({ useHandCursor: true });
+        btnBg.setStrokeStyle(1, 0xffffff);
+        this.add.text(this.cameras.main.width / 2, this.cameras.main.height - 30, 'Iniciar Reparo', { fontFamily: 'monospace', fontSize: '12px', fill: '#fff' }).setOrigin(0.5);
+
+        btnBg.on('pointerdown', () => {
+            this.uiManager.fadeOut(200, () => {
+                this.scene.start('RepairScene');
+            });
+        });
     }
 }

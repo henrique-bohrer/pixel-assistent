@@ -6,76 +6,62 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create() {
-        const width = this.scale.width;
-        const height = this.scale.height;
+        const width = this.cameras.main.width;
+        const height = this.cameras.main.height;
 
         // Background
-        this.cameras.main.setBackgroundColor('#1a1a24');
+        this.add.rectangle(0, 0, width, height, 0x1a1a2e).setOrigin(0, 0);
 
         // Title
-        this.add.text(width / 2, height / 3, 'ASSISTÊNCIA PIXEL', {
+        this.add.text(width / 2, height / 3, 'Assistência Pixel', {
             fontFamily: 'monospace',
             fontSize: '24px',
-            fill: '#4CAF50',
-            fontStyle: 'bold'
+            fill: '#00ffcc',
+            stroke: '#000',
+            strokeThickness: 3
         }).setOrigin(0.5);
 
-        this.add.text(width / 2, height / 3 + 25, 'Console de Reparos', {
+        // Subtitle
+        this.add.text(width / 2, height / 3 + 20, 'O Rei do Conserto', {
             fontFamily: 'monospace',
             fontSize: '12px',
-            fill: '#888'
+            fill: '#aaaaaa'
         }).setOrigin(0.5);
 
-        // "Abrir Oficina" Button
-        const btnBg = this.add.graphics();
-        btnBg.fillStyle(0x333333, 1);
-        btnBg.lineStyle(2, 0x4CAF50, 1);
+        // Button Background
+        const btnWidth = 120;
+        const btnHeight = 30;
+        const btnBg = this.add.rectangle(width / 2, height / 1.5, btnWidth, btnHeight, 0x333333);
+        btnBg.setStrokeStyle(1, 0xffffff);
+        btnBg.setInteractive({ useHandCursor: true });
 
-        const btnW = 120;
-        const btnH = 30;
-        const btnX = width / 2 - btnW / 2;
-        const btnY = height / 2 + 20;
-
-        btnBg.fillRect(btnX, btnY, btnW, btnH);
-        btnBg.strokeRect(btnX, btnY, btnW, btnH);
-
-        const btnText = this.add.text(width / 2, btnY + btnH / 2, 'ABRIR OFICINA', {
+        // Button Text
+        const btnText = this.add.text(width / 2, height / 1.5, 'Abrir Oficina', {
             fontFamily: 'monospace',
             fontSize: '12px',
-            fill: '#fff'
+            fill: '#ffffff'
         }).setOrigin(0.5);
 
-        // Interactive Area
-        const hitArea = this.add.zone(width / 2, btnY + btnH / 2, btnW, btnH).setInteractive();
-        hitArea.on('pointerdown', () => {
-            btnBg.fillStyle(0x4CAF50, 1);
-            btnBg.fillRect(btnX, btnY, btnW, btnH);
-            btnText.setFill('#000');
-
-            this.cameras.main.fadeOut(300, 0, 0, 0);
+        // Hover effects
+        btnBg.on('pointerover', () => {
+            btnBg.setFillStyle(0x555555);
         });
 
-        hitArea.on('pointerover', () => {
-            document.body.style.cursor = 'pointer';
-            btnBg.clear();
-            btnBg.fillStyle(0x444444, 1);
-            btnBg.lineStyle(2, 0x66ff66, 1);
-            btnBg.fillRect(btnX, btnY, btnW, btnH);
-            btnBg.strokeRect(btnX, btnY, btnW, btnH);
+        btnBg.on('pointerout', () => {
+            btnBg.setFillStyle(0x333333);
         });
 
-        hitArea.on('pointerout', () => {
-            document.body.style.cursor = 'default';
-            btnBg.clear();
-            btnBg.fillStyle(0x333333, 1);
-            btnBg.lineStyle(2, 0x4CAF50, 1);
-            btnBg.fillRect(btnX, btnY, btnW, btnH);
-            btnBg.strokeRect(btnX, btnY, btnW, btnH);
+        // Click effect & Scene Transition
+        btnBg.on('pointerdown', () => {
+            btnBg.setFillStyle(0x222222);
+            this.cameras.main.fadeOut(200, 0, 0, 0);
         });
 
-        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
-            document.body.style.cursor = 'default';
+        this.cameras.main.once('camerafadeoutcomplete', () => {
             this.scene.start('WorkshopScene');
         });
+
+        // Fade in on start
+        this.cameras.main.fadeIn(200, 0, 0, 0);
     }
 }
