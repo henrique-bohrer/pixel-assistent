@@ -1,30 +1,34 @@
 [
     {
-        "id": "defect_screen",
-        "name": "Tela Quebrada",
-        "symptom": "Meu celular caiu e a tela tá em pedaços...",
-        "required_part": "part_screen",
-        "minigame": "screen_replacement"
+        "id": "broken_screen",
+        "name": "Tela Trincada",
+        "symptom": "Meu celular caiu e a tela estilhaçou!",
+        "requiredPart": "screen_generic",
+        "minigame": "screen_replacement",
+        "categories": ["retro", "modern", "geek"]
     },
     {
-        "id": "defect_battery",
+        "id": "bad_battery",
         "name": "Bateria Viciada",
-        "symptom": "Não segura carga nem por 10 minutos!",
-        "required_part": "part_battery",
-        "minigame": "battery_replacement"
+        "symptom": "A bateria não dura nem 2 horas...",
+        "requiredPart": "battery_generic",
+        "minigame": "battery_replacement",
+        "categories": ["retro", "modern", "geek"]
     },
     {
-        "id": "defect_oxidation",
+        "id": "board_short",
+        "name": "Curto na Placa",
+        "symptom": "Ele apagou do nada e não liga mais.",
+        "requiredPart": "ic_chip",
+        "minigame": "soldering",
+        "categories": ["modern", "geek"]
+    },
+    {
+        "id": "water_damage",
         "name": "Oxidação",
-        "symptom": "Deixei cair na privada...",
-        "required_part": "part_alcohol",
-        "minigame": "cleaning"
-    },
-    {
-        "id": "defect_chip",
-        "name": "Chip Queimado",
-        "symptom": "Fez um estalo e não liga mais, tem cheiro de queimado.",
-        "required_part": "part_chip",
-        "minigame": "soldering"
+        "symptom": "Caiu na água, eu coloquei no arroz mas não adiantou.",
+        "requiredPart": null,
+        "minigame": "cleaning",
+        "categories": ["retro", "modern", "geek"]
     }
 ]

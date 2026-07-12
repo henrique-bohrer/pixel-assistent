@@ -6,8 +6,13 @@ export class BootScene extends Phaser.Scene {
     }
 
     preload() {
-        // Here we would load essential assets like the company logo or loading bar graphics.
-        // For now, we'll keep it empty since we're using procedural graphics.
+        // Load only what is necessary for the Preload scene (e.g., logo or background for loading bar)
+        // We will generate a simple graphic for the logo just to have something
+        let graphics = this.add.graphics();
+        graphics.fillStyle(0x444444, 1);
+        graphics.fillRect(0, 0, 100, 100);
+        graphics.generateTexture('boot_logo', 100, 100);
+        graphics.destroy();
     }
 
     create() {

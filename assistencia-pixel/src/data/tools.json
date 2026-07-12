@@ -1,26 +1,32 @@
 [
     {
-        "id": "tool_screwdriver",
-        "name": "Chave Phillips",
+        "id": "screwdriver_basic",
+        "name": "Chave Philips Simples",
         "speed": 1.0,
-        "unlock_level": 1
+        "unlockLevel": 0
     },
     {
-        "id": "tool_multimeter",
-        "name": "Multímetro",
-        "speed": 1.0,
-        "unlock_level": 1
+        "id": "screwdriver_electric",
+        "name": "Parafusadeira Elétrica",
+        "speed": 2.0,
+        "unlockLevel": 2
     },
     {
-        "id": "tool_soldering_iron",
+        "id": "multimeter_basic",
+        "name": "Multímetro Digital",
+        "speed": 1.0,
+        "unlockLevel": 0
+    },
+    {
+        "id": "soldering_iron",
         "name": "Ferro de Solda",
         "speed": 1.0,
-        "unlock_level": 2
+        "unlockLevel": 1
     },
     {
-        "id": "tool_brush",
-        "name": "Pincel Anti-estático",
+        "id": "brush_anti_static",
+        "name": "Pincel Antiestático",
         "speed": 1.0,
-        "unlock_level": 1
+        "unlockLevel": 0
     }
 ]

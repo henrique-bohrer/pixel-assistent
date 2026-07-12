@@ -7,7 +7,7 @@ import { DiagnosisScene } from './scenes/DiagnosisScene';
 import { RepairScene } from './scenes/RepairScene';
 
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL, // Prioritize WebGL with Canvas fallback via AUTO if not supported, but explicit WEBGL per request
     parent: 'game-container',
     width: 384,
     height: 216,
