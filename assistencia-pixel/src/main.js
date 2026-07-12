@@ -9,8 +9,8 @@ import { RepairScene } from './scenes/RepairScene';
 const config = {
     type: Phaser.WEBGL, // Prioritize WebGL with Canvas fallback via AUTO if not supported, but explicit WEBGL per request
     parent: 'game-container',
-    width: 384,
-    height: 216,
+    width: 768,
+    height: 468,
     pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,
