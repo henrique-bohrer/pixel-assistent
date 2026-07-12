@@ -9,8 +9,8 @@ import { RepairScene } from './scenes/RepairScene';
 const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
-    width: 1280,
-    height: 720,
+    width: 384,
+    height: 216,
     pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,
