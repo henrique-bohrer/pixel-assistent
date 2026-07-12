@@ -3,14 +3,14 @@
 > vite
 
 
-  VITE v8.1.4  ready in 204 ms
+  VITE v8.1.4  ready in 393 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
-12:38:47 PM [vite] (client) [optimizer] bundling dependencies...
-12:44:40 PM [vite] (client) page reload src/systems/DataManager.js
-12:44:51 PM [vite] (client) page reload src/systems/UIManager.js
-1:04:16 PM [vite] (client) page reload src/scenes/RepairScene.js
-1:04:24 PM [vite] (client) page reload src/scenes/RepairScene.js
-1:04:55 PM [vite] (client) page reload src/scenes/RepairScene.js
-1:05:20 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:04:59 PM [vite] (client) [optimizer] bundling dependencies...
+2:17:19 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:17:26 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:17:31 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:18:11 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:18:53 PM [vite] (client) page reload src/scenes/RepairScene.js
+2:19:37 PM [vite] (client) page reload src/scenes/RepairScene.js
